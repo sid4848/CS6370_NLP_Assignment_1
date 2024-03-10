@@ -72,7 +72,7 @@ class SearchEngine:
 		"""
 		Preprocess the queries - segment, tokenize, stem/lemmatize and remove stopwords
 		"""
-
+  
 		# Segment queries
 		segmentedQueries = []
 		for query in queries:
