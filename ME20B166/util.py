@@ -40,20 +40,3 @@ def edit_distance(str1, str2):
             
     return dp[m][n]
 
-
-
-## Synset of corresponding words
-def get_synsets(word):
-    
-    synsets = wordnet.synsets(word)
-    return synsets
-
-## Function to calculate the path-based similarity between synsets of two words
-def calculate_similarity(synsets1, synsets2):
-    max_similarity = 0
-    for syn1 in synsets1:
-        for syn2 in synsets2:
-            similarity = syn1.path_similarity(syn2)
-            if similarity is not None and similarity > max_similarity:
-                max_similarity = similarity
-    return max_similarity
