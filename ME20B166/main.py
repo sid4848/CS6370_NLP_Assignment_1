@@ -65,19 +65,6 @@ class SearchEngine:
 		"""
 		return self.stopwordRemover.fromList(text)
 
-	def find_closest_correction(self, word, query):
-		"""
-		Given a word, find the closest correction using the SpellCheck class.
-		"""
-		# self.spellChecker = SpellCheck(query)
-		# Find top 5 candidate corrections for the word
-		candidates = self.spellChecker.find_corrections(word)
-        
-		# Select the candidate with the minimum edit distance to the original word
-		closest_correction = min(candidates, key=lambda candidate: edit_distance(word, candidate))
-		
-		return closest_correction
-
 	def preprocessQueries(self, queries):
 		"""
 		Preprocess the queries - segment, tokenize, stem/lemmatize and remove stopwords
@@ -107,28 +94,8 @@ class SearchEngine:
 			stopwordRemovedQuery = self.removeStopwords(query)
 			stopwordRemovedQueries.append(stopwordRemovedQuery)
 		json.dump(stopwordRemovedQueries, open(self.args.out_folder + "stopword_removed_queries.txt", 'w'))
-
-		if self.args.custom:
-			# Spell check and find closest corrections in a more efficient manner
-			correctedQueries = []
-			correctedTopFiveWordsInQueries = []
-			for query in stopwordRemovedQueries:
-				correctedQuery = [
-					[self.find_closest_correction(word, query) for word in sentence] for sentence in query
-				]
-				correctedTopFiveWordsInQuery = [
-					[self.spellChecker.find_corrections(word) for word in sentence] for sentence in query
-				]
-				correctedQueries.append(correctedQuery)
-				correctedTopFiveWordsInQueries.append(correctedTopFiveWordsInQuery)
-			
-			# Optionally, dump the corrections to a file
-			json.dump(correctedQueries, open(self.args.out_folder + "corrected_queries.txt", 'w'))
-			json.dump(correctedTopFiveWordsInQueries, open(self.args.out_folder + "corrected_top_five_words_in_queries.txt", 'w'))
-			preprocessedQueries = correctedQueries
-		else:
-			preprocessedQueries = stopwordRemovedQueries
 		
+		preprocessedQueries = stopwordRemovedQueries
 		return preprocessedQueries
 
 	def preprocessDocs(self, docs):
@@ -161,7 +128,6 @@ class SearchEngine:
 			stopwordRemovedDocs.append(stopwordRemovedDoc)
 		json.dump(stopwordRemovedDocs, open(self.args.out_folder + "stopword_removed_docs.txt", 'w'))
 
-   
 		preprocessedDocs = stopwordRemovedDocs
 		return preprocessedDocs
 

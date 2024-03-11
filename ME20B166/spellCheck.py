@@ -1,16 +1,16 @@
 import numpy as np
+import json
 from nltk import bigrams
 from nltk.tokenize import word_tokenize
 from nltk.corpus import stopwords
 from sklearn.metrics.pairwise import cosine_similarity
-
+from util import *
 
 class SpellCheck:
-    def __init__(self, vocabulary_vectors):
-        self.vocabulary_vectors = vocabulary_vectors
-        self.unique_tokens = set(vocabulary_vectors.keys())
+    def __init__(self, json_file_path):
+        self.vocabulary_vectors = self.load_and_process_data(json_file_path)
 
-    def load_and_process_data(json_file_path):
+    def load_and_process_data(self, json_file_path):
         # Load JSON data
         with open(json_file_path, 'r') as file:
             cranfield_data = json.load(file)
@@ -24,7 +24,7 @@ class SpellCheck:
 
         # Construct the vocabulary and represent tokens as vectors
         unique_tokens = set(tokens)
-        vocabulary_vectors = {token: token_to_vector(token) for token in unique_tokens}
+        vocabulary_vectors = {token: self.token_to_vector(token) for token in unique_tokens}
         return vocabulary_vectors
 
 
@@ -43,31 +43,14 @@ class SpellCheck:
     def find_corrections(self, typo):
         typo_vector = self.token_to_vector(typo)
         similarities = []
-        for token, vector in self.unique_tokens:
+        for token, vector in self.vocabulary_vectors.items():
             sim = cosine_similarity([typo_vector], [vector])[0][0]
             similarities.append((token, sim))
         similarities.sort(key=lambda x: x[1], reverse=True)
         return [(token, sim) for token, sim in similarities[:5]]
 
-def load_and_process_data(json_file_path):
-        # Load JSON data
-        with open(json_file_path, 'r') as file:
-            cranfield_data = json.load(file)
 
-        # Concatenate all bodies to form the corpus
-        corpus = ' '.join([doc['body'] for doc in cranfield_data])
-
-        # Tokenize and clean the corpus
-        tokens = word_tokenize(corpus.lower())
-        tokens = [token for token in tokens if token.isalpha() and token not in stopwords.words('english')]
-
-        # Construct the vocabulary and represent tokens as vectors
-        unique_tokens = set(tokens)
-        vocabulary_vectors = {token: token_to_vector(token) for token in unique_tokens}
-        return vocabulary_vectors
-
-load_and_process_data('./cranfield/cran_docs.json')
-spell_check = SpellCheck('cran_docs.json')
+spell_check = SpellCheck('./cranfield/cran_docs.json')
 corrections_for_boundery = spell_check.find_corrections('boundery')
 corrections_for_transiant = spell_check.find_corrections('transiant')
 corrections_for_aerplain = spell_check.find_corrections('aerplain')
@@ -86,6 +69,12 @@ def find_closest_candidate(typo, candidates):
             min_distance = distance
             closest_candidate = candidate
     return closest_candidate, min_distance
+
+candidates = {
+    'boundery': [correction for correction, score in corrections_for_boundery],
+    'transiant': [correction for correction, score in corrections_for_transiant],
+    'aerplain': [correction for correction, score in corrections_for_aerplain]
+}
 
 # Finding the closest candidate for each typo
 closest_candidates = {typo: find_closest_candidate(typo, candidates[typo]) for typo in candidates}
