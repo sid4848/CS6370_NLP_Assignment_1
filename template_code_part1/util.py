@@ -33,7 +33,7 @@ def edit_distance(str1, str2):
     # Compute the distances
     for i in range(1, m + 1):
         for j in range(1, n + 1):
-            cost = 0 if str1[i - 1] == str2[j - 1] else 1
+            cost = 0 if str1[i - 1] == str2[j - 1] else 3
             dp[i][j] = min(dp[i - 1][j] + 1,        # Deletion
                            dp[i][j - 1] + 1,        # Insertion
                            dp[i - 1][j - 1] + cost) # Substitution

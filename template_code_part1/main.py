@@ -135,7 +135,7 @@ class SearchEngine:
 		"""
 		Preprocess the documents
 		"""
-  
+        
 		# Segment docs
 		segmentedDocs = []
 		for doc in docs:
@@ -161,9 +161,6 @@ class SearchEngine:
 			stopwordRemovedDocs.append(stopwordRemovedDoc)
 		json.dump(stopwordRemovedDocs, open(self.args.out_folder + "stopword_removed_docs.txt", 'w'))
 
-		if(args.custom):
-			# Intializing spell check
-			self.spellChecker = SpellCheck(stopwordRemovedDocs)
    
 		preprocessedDocs = stopwordRemovedDocs
 		return preprocessedDocs
@@ -210,7 +207,7 @@ class SearchEngine:
 		
 
 		# Read documents
-		docs_json = json.load(open(args.dataset + "cran_docs.json", 'r'))[:10]
+		docs_json = json.load(open(args.dataset + "cran_docs.json", 'r'))
 		docs = [item["body"] for item in docs_json]
 		# Process documents
 		processedDocs = self.preprocessDocs(docs)
