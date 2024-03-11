@@ -2,7 +2,6 @@ from sentenceSegmentation import SentenceSegmentation
 from tokenization import Tokenization
 from inflectionReduction import InflectionReduction
 from stopwordRemoval import StopwordRemoval
-from spellCheck import SpellCheck
 from util import *
 
 
@@ -31,7 +30,6 @@ class SearchEngine:
 		self.sentenceSegmenter = SentenceSegmentation()
 		self.inflectionReducer = InflectionReduction()
 		self.stopwordRemover = StopwordRemoval()
-		self.spellChecker = None
   
 	def segmentSentences(self, text):
 		"""
